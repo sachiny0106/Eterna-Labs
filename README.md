@@ -1,171 +1,185 @@
 # Meme Coin Aggregator
 
-Real-time meme coin data aggregation service that fetches, merges, and serves token data from multiple DEX sources.
+A backend service I built to aggregate real-time meme coin data from multiple DEX sources. Think of it like what axiom.trade does - fetching token data, merging duplicates, and pushing live updates to connected clients.
 
 ## Live Demo
 
-**URL**: `https://meme-coin-aggregator-ru0a.onrender.com`
+**Live URL:** https://meme-coin-aggregator-ru0a.onrender.com
 
-**Video Demo**: [YouTube Link] _(add your video link)_
+**Demo Video:** [YouTube Link] _(coming soon)_
 
-## Features
+**GitHub:** https://github.com/sachiny0106/Eterna-Labs
 
-- Aggregates data from DexScreener, Jupiter, and GeckoTerminal APIs
-- WebSocket support for real-time price updates
-- Caching with Redis (or in-memory fallback)
-- Rate limiting with exponential backoff
-- Cursor-based pagination
-- Time period filtering (1h, 24h, 7d)
+## What it does
 
-## Quick Start
+- Pulls token data from 3 different APIs (DexScreener, Jupiter, GeckoTerminal)
+- Merges duplicate tokens intelligently (same token can appear on multiple DEXs)
+- Pushes real-time updates via WebSocket
+- Caches everything to avoid hammering the APIs
+- Handles rate limits properly with backoff
+
+## Getting Started
 
 ```bash
-# install deps
 npm install
+npm run dev      # starts dev server with hot reload
+npm test         # runs the test suite
+```
 
-# run in dev mode
-npm run dev
+That's it. Server starts at http://localhost:3000
 
-# run tests
-npm test
-
-# build for production
+For production:
+```bash
 npm run build
 npm start
 ```
 
-Server runs at http://localhost:3000
+## API Reference
 
-## API Endpoints
+### Token Endpoints
 
-| Endpoint | Description |
-|----------|-------------|
-| GET /api/tokens | List tokens with filters |
-| GET /api/tokens/search?q=pepe | Search by name/ticker |
-| GET /api/tokens/:address | Get single token |
-| POST /api/tokens/batch | Get multiple tokens |
-| GET /api/tokens/trending/list | Top tokens by volume |
-| GET /api/tokens/gainers/list | Top gainers |
-| GET /api/tokens/losers/list | Top losers |
-| GET /api/health | Health check |
-| GET /api/health/stats | Detailed stats |
+| Method | Endpoint | What it does |
+|--------|----------|--------------|
+| GET | `/api/tokens` | Get paginated list of tokens |
+| GET | `/api/tokens/search?q=pepe` | Search tokens by name |
+| GET | `/api/tokens/:address` | Get specific token by address |
+| POST | `/api/tokens/batch` | Get multiple tokens at once |
+| GET | `/api/tokens/trending/list` | Top tokens by volume |
+| GET | `/api/tokens/gainers/list` | Biggest gainers |
+| GET | `/api/tokens/losers/list` | Biggest losers |
 
 ### Query Parameters
 
-| Param | Values | Description |
-|-------|--------|-------------|
-| time_period | 1h, 24h, 7d | Metrics time window |
-| sort_by | volume, price_change, market_cap, liquidity | Sort field |
-| sort_dir | asc, desc | Sort direction |
-| limit | 1-100 | Page size |
-| cursor | base64 string | Pagination cursor |
-| search | string | Filter by name/ticker |
+You can filter and sort the results:
 
-### Example Request
-
-```bash
-curl "http://localhost:3000/api/tokens?time_period=24h&sort_by=volume&sort_dir=desc&limit=20"
+```
+GET /api/tokens?time_period=24h&sort_by=volume&sort_dir=desc&limit=20
 ```
 
-### Example Response
+- `time_period`: 1h, 24h, or 7d
+- `sort_by`: volume, price_change, market_cap, liquidity
+- `sort_dir`: asc or desc
+- `limit`: how many results (max 100)
+- `cursor`: for pagination (base64 encoded)
 
-```json
-{
-  "success": true,
-  "data": {
-    "data": [
-      {
-        "token_address": "...",
-        "token_name": "PEPE",
-        "token_ticker": "PEPE",
-        "price_usd": 0.00001234,
-        "price_24hr_change": 15.5,
-        "volume_24hr": 1500000,
-        "market_cap_usd": 5000000,
-        "liquidity_usd": 200000
-      }
-    ],
-    "pagination": {
-      "limit": 20,
-      "next_cursor": "MjA=",
-      "total_count": 196,
-      "has_more": true
-    }
-  }
-}
+### Health Check
+
+```
+GET /api/health        # basic health status
+GET /api/health/stats  # detailed stats with cache info
 ```
 
 ## WebSocket
 
-Connect to `ws://localhost:3000` with Socket.io client.
-
-### Events
-
-| Event | Description |
-|-------|-------------|
-| price_update | Price changed > 1% |
-| volume_spike | Volume increased > 50% |
-| new_token | New token discovered |
-| batch_update | Periodic batch of tokens |
-
-### Example
+Connect using Socket.io and you'll get real-time updates:
 
 ```javascript
-const socket = io('http://localhost:3000');
+const socket = io('https://meme-coin-aggregator-ru0a.onrender.com');
 
-socket.on('price_update', (msg) => {
-  console.log('Price update:', msg.data);
+socket.on('price_update', (data) => {
+  // fires when a token price changes more than 1%
 });
 
-socket.on('batch_update', (msg) => {
-  console.log('Batch:', msg.data.tokens.length, 'tokens');
+socket.on('volume_spike', (data) => {
+  // fires when volume jumps more than 50%
+});
+
+socket.on('batch_update', (data) => {
+  // periodic update with all tokens (every 10s)
 });
 ```
+
+---
 
 ## Design Decisions
 
-### Why these APIs?
+I want to explain why I made certain choices, because there's usually a reason behind each one.
 
-- **DexScreener**: Most comprehensive Solana DEX data, good rate limits (300/min)
-- **Jupiter**: Official Solana aggregator, good for trending tokens
-- **GeckoTerminal**: Backup source + new pool discovery
+### Why these 3 APIs?
 
-### Why token bucket rate limiting?
+I needed multiple sources to get comprehensive data:
 
-Simple but effective. Refills over time so we can burst when needed but stay within limits. Exponential backoff on failures prevents hammering APIs when they're struggling.
+- **DexScreener** - This is the main one. Has the best Solana DEX coverage and generous rate limits (300 req/min). Most of the token data comes from here.
+- **Jupiter** - Official Solana aggregator. Good for discovering trending tokens that might not show up elsewhere.
+- **GeckoTerminal** - Backup source. Also good for finding newly created pools.
 
-### Why cursor pagination?
+The idea is if one API is down or missing data, the others fill in the gaps.
 
-Offset pagination breaks when data changes between requests. With real-time token data, using cursors (base64 encoded index) keeps pagination consistent even when new tokens get added.
+### Why token bucket for rate limiting?
 
-### Why in-memory + Redis cache?
+I considered a few approaches:
+1. Simple counter that resets every minute - too rigid, can't handle bursts
+2. Sliding window - more complex, overkill for this
+3. Token bucket - just right
 
-Redis for production (multiple instances share cache), memory for local dev (simpler). 30s TTL balances freshness vs API load. Individual token caching for fast lookups.
+Token bucket lets you burst when needed (like initial data load) but still respects the limits over time. When we hit rate limits, exponential backoff kicks in so we're not hammering a struggling API.
 
-### Why Socket.io?
+### Why cursor pagination instead of offset?
 
-Auto-reconnection, fallback to polling, room support for subscriptions. Could use native ws but Socket.io handles edge cases.
+This was an important one. With offset pagination (`?page=2`), if tokens get added between requests, you might see duplicates or miss items. That's bad for real-time data.
 
-### Data Flow
+Cursor pagination uses a marker (base64 encoded index) that stays consistent. Even if new tokens appear, your position in the list doesn't shift.
+
+### Why both Redis and memory cache?
+
+Depends on the deployment:
+- **Memory cache** for local dev or single instance - simple, no external deps
+- **Redis** for production with multiple instances - they all share the same cache
+
+The 30 second TTL is a balance between freshness (meme coins move fast) and not killing the APIs with requests.
+
+### Why Socket.io instead of raw WebSockets?
+
+Could have used the native `ws` library, but Socket.io handles a lot of edge cases:
+- Auto-reconnection when connection drops
+- Falls back to polling if WebSocket fails
+- Room support for subscriptions
+- Better cross-browser compatibility
+
+For a production app, these things matter.
+
+### How the data flows
+
+Here's what happens when the server starts:
 
 ```
-1. Startup: Fetch from all 3 APIs, merge by token address
-2. Every 10s: Push batch update to WebSocket clients
-3. Every 60s: Full refresh from APIs
-4. On access: Check cache, return cached or trigger fetch
+1. Startup
+   → Fetch from all 3 APIs in parallel
+   → Merge tokens by address (prefer non-zero values)
+   → Cache everything
+
+2. Every 10 seconds
+   → Push batch update to all WebSocket clients
+   
+3. Every 60 seconds  
+   → Full refresh from all APIs
+   → Detect price changes (>1%) and volume spikes (>50%)
+   → Broadcast events to relevant clients
+
+4. On API request
+   → Check cache first
+   → If miss, fetch from APIs
+   → Apply filters/sorting
+   → Return paginated response
 ```
+
+---
 
 ## Project Structure
 
 ```
 src/
-├── api/           # express routes
-├── config/        # env config with zod validation
-├── services/      # business logic (aggregator, cache, dex clients)
+├── api/           # REST routes (tokens, health)
+├── config/        # env validation with zod
+├── services/      # the meat - aggregator, cache, DEX clients
 ├── websocket/     # socket.io server
-├── scheduler/     # cron jobs
-├── types/         # typescript interfaces
-└── utils/         # logging, rate limiter
+├── scheduler/     # cron jobs for periodic refresh
+├── types/         # typescript types
+└── utils/         # logger, rate limiter
+
+tests/
+├── unit/          # cache, rate limiter, DEX client tests
+└── integration/   # API and WebSocket tests
 ```
 
 ## Environment Variables
@@ -173,46 +187,56 @@ src/
 ```env
 PORT=3000
 NODE_ENV=development
-REDIS_URL=redis://localhost:6379
 USE_MEMORY_CACHE=true
 CACHE_TTL=30
-PRICE_UPDATE_INTERVAL=10
-FULL_REFRESH_INTERVAL=60
+REDIS_URL=redis://localhost:6379   # only if USE_MEMORY_CACHE=false
 ```
 
-## Testing
+## Running Tests
 
 ```bash
-# run all tests
-npm test
-
-# with coverage
-npm test -- --coverage
+npm test                    # run all 52 tests
+npm test -- --coverage      # with coverage report
+npm test -- --watch         # watch mode for development
 ```
 
-Tests cover:
-- Cache operations (set, get, delete, TTL)
-- Rate limiter (token bucket, backoff)
-- API routes (all endpoints)
-- DEX client transformations
+The tests cover:
+- Cache operations (TTL, hit/miss, cleanup)
+- Rate limiter (token bucket, exponential backoff)  
+- All API endpoints (happy path + error cases)
+- WebSocket events
+- DEX client data transformations
 
 ## Deployment
 
-### Render (recommended)
+I deployed on Render (free tier). Here's how:
 
 1. Push to GitHub
-2. Connect repo to Render
-3. Set build command: `npm install && npm run build`
-4. Set start command: `npm start`
-5. Add env vars (USE_MEMORY_CACHE=true)
+2. Create new Web Service on Render
+3. Connect your repo
+4. Build command: `npm install && npm run build`
+5. Start command: `npm start`
+6. Add env vars: `NODE_ENV=production`, `USE_MEMORY_CACHE=true`
 
-### Docker
+Note: Free tier spins down after 15 min of no traffic. First request after idle takes ~30 seconds.
+
+### Docker option
 
 ```bash
-docker build -t meme-coin-aggregator .
-docker run -p 3000:3000 meme-coin-aggregator
+docker-compose up    # starts app + redis
 ```
+
+---
+
+## What I'd improve with more time
+
+- Add Redis cache in production (currently using memory to stay on free tier)
+- Add historical price tracking
+- WebSocket subscriptions to specific tokens only
+- Better error recovery when all APIs fail
+- Rate limit per client IP
+- Swagger/OpenAPI docs
 
 ## License
 
-MIT
+MIT - do whatever you want with it
