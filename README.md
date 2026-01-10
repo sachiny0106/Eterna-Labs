@@ -4,7 +4,7 @@ Real-time meme coin data aggregation service that fetches, merges, and serves to
 
 ## Live Demo
 
-**URL**: `https://your-app.onrender.com` _(update after deployment)_
+**URL**: `https://meme-coin-aggregator-ru0a.onrender.com`
 
 **Video Demo**: [YouTube Link] _(add your video link)_
 
