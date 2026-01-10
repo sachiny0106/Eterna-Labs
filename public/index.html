@@ -4,64 +4,146 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meme Coin Aggregator</title>
+  <title>Meme Coin Aggregator | Real-time Solana Token Data</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
 </head>
 
 <body>
-  <div class="container">
-    <h1>Meme Coin Aggregator</h1>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <span class="logo-emoji">🚀</span>
+          <span class="logo-text">MemeCoin<span class="logo-accent">Agg</span></span>
+        </div>
+        <span class="logo-tagline">Real-time Solana meme token data</span>
+      </div>
+      <div class="header-right">
+        <div class="stat-box">
+          <span class="stat-label">SOL</span>
+          <span class="stat-value" id="solPrice">$--</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Tokens</span>
+          <span class="stat-value" id="totalTokens">--</span>
+        </div>
+        <div id="connectionStatus" class="connection-status disconnected">
+          <span class="status-dot"></span>
+          <span class="status-text">Connecting</span>
+        </div>
+      </div>
+    </header>
 
+    <!-- Toolbar -->
     <div class="toolbar">
-      <div class="filters">
-        <button class="time-btn active" data-period="1h">1H</button>
-        <button class="time-btn" data-period="24h">24H</button>
-        <button class="time-btn" data-period="7d">7D</button>
+      <div class="toolbar-section">
+        <div class="time-tabs">
+          <button class="time-tab active" data-period="1h">1H</button>
+          <button class="time-tab" data-period="24h">24H</button>
+          <button class="time-tab" data-period="7d">7D</button>
+        </div>
       </div>
 
-      <input type="text" id="searchInput" placeholder="Search tokens..." />
+      <div class="toolbar-section search-section">
+        <div class="search-wrapper">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search by name or ticker..." />
+        </div>
+      </div>
 
-      <select id="sortSelect" title="Sort tokens by">
-        <option value="volume">Sort by Volume</option>
-        <option value="price_change">Sort by Change</option>
-        <option value="market_cap">Sort by MCap</option>
-        <option value="liquidity">Sort by Liquidity</option>
-      </select>
+      <div class="toolbar-section toolbar-right">
+        <select id="sortSelect" class="sort-select">
+          <option value="volume">📊 Volume</option>
+          <option value="price_change">📈 Price Change</option>
+          <option value="market_cap">💰 Market Cap</option>
+          <option value="liquidity">💧 Liquidity</option>
+        </select>
 
-      <button id="refreshBtn">Refresh</button>
+        <button id="refreshBtn" class="btn-refresh" title="Refresh data">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12a9 9 0 11-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+            <path d="M21 3v5h-5"></path>
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <div class="stats">
-      <span>Tokens: <strong id="totalTokens">-</strong></span>
-      <span>SOL: <strong id="solPrice">-</strong></span>
-      <span>Updated: <strong id="lastUpdate">-</strong></span>
-      <span id="connectionStatus" class="status disconnected">Connecting...</span>
+    <!-- Quick Stats -->
+    <div class="quick-stats">
+      <a href="#" class="quick-stat-card" data-filter="trending">
+        <span class="quick-icon">🔥</span>
+        <span class="quick-label">Trending</span>
+      </a>
+      <a href="#" class="quick-stat-card" data-filter="gainers">
+        <span class="quick-icon">📈</span>
+        <span class="quick-label">Top Gainers</span>
+      </a>
+      <a href="#" class="quick-stat-card" data-filter="losers">
+        <span class="quick-icon">📉</span>
+        <span class="quick-label">Top Losers</span>
+      </a>
+      <a href="#" class="quick-stat-card" data-filter="new">
+        <span class="quick-icon">✨</span>
+        <span class="quick-label">Newest</span>
+      </a>
     </div>
 
-    <table id="tokenTable">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Token</th>
-          <th>Price</th>
-          <th>Change</th>
-          <th>Volume</th>
-          <th>Market Cap</th>
-          <th>Liquidity</th>
-        </tr>
-      </thead>
-      <tbody id="tokenTableBody">
-        <tr>
-          <td colspan="7" class="loading">Loading...</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="pagination">
-      <button id="prevBtn" disabled>Previous</button>
-      <span id="pageInfo">-</span>
-      <button id="nextBtn">Next</button>
+    <!-- Main Table -->
+    <div class="table-wrapper">
+      <table id="tokenTable">
+        <thead>
+          <tr>
+            <th class="col-rank">#</th>
+            <th class="col-token">Token</th>
+            <th class="col-price">Price</th>
+            <th class="col-change">Change</th>
+            <th class="col-volume">Volume</th>
+            <th class="col-mcap">Market Cap</th>
+            <th class="col-liquidity">Liquidity</th>
+            <th class="col-txns">Txns</th>
+          </tr>
+        </thead>
+        <tbody id="tokenTableBody">
+          <tr>
+            <td colspan="8" class="loading-cell">
+              <div class="loader-container">
+                <div class="loader"></div>
+                <span>Loading tokens...</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="pagination">
+        <button id="prevBtn" class="btn-page" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"></path>
+          </svg>
+          Prev
+        </button>
+        <span id="pageInfo" class="page-info">--</span>
+        <button id="nextBtn" class="btn-page">
+          Next
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="footer-info">
+        <span class="last-update">Updated <span id="lastUpdate">--</span></span>
+        <span class="divider">•</span>
+        <span class="data-sources">Data: DexScreener, Jupiter, GeckoTerminal</span>
+      </div>
+    </footer>
   </div>
 
   <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
