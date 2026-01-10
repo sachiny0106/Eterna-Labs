@@ -6,8 +6,8 @@
 
 body {
     font-family: Arial, sans-serif;
-    background: #1a1a2e;
-    color: #eee;
+    background: #39495c;
+    color: #ece3e3;
     padding: 20px;
 }
 
@@ -34,32 +34,32 @@ h1 {
 
 .time-btn {
     padding: 8px 14px;
-    background: #2d2d4a;
+    background: #2e2e4f;
     border: none;
-    color: #aaa;
+    color: #afaaaa;
     cursor: pointer;
     border-radius: 4px;
 }
 
 .time-btn:hover {
-    background: #3d3d5a;
+    background: #49496d;
 }
 
 .time-btn.active {
-    background: #5555aa;
-    color: #fff;
+    background: #4b4b93;
+    color: #f5eeee;
 }
 
 input, select {
     padding: 8px 12px;
-    background: #2d2d4a;
-    border: 1px solid #444;
-    color: #eee;
+    background: #353558;
+    border: 1px solid #645d5d;
+    color: #f4ecec;
     border-radius: 4px;
 }
 
 input::placeholder {
-    color: #777;
+    color: #8a8787;
 }
 
 #search {
@@ -68,7 +68,7 @@ input::placeholder {
 
 button {
     padding: 8px 14px;
-    background: #2d2d4a;
+    background: #353558;
     border: none;
     color: #ccc;
     cursor: pointer;
@@ -76,7 +76,7 @@ button {
 }
 
 button:hover {
-    background: #3d3d5a;
+    background: #4c4c71;
 }
 
 button:disabled {
@@ -88,7 +88,7 @@ button:disabled {
     display: flex;
     gap: 25px;
     margin-bottom: 15px;
-    color: #999;
+    color: #9b9696;
     font-size: 14px;
 }
 
@@ -101,23 +101,23 @@ button:disabled {
 }
 
 #status.online {
-    color: #4f4;
+    color: rgb(71, 243, 71);
 }
 
 #status.offline {
-    color: #f66;
+    color: rgb(235, 94, 94);
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    background: #16162a;
+    background: #2f2f58;
 }
 
 th, td {
     padding: 12px;
     text-align: left;
-    border-bottom: 1px solid #2a2a44;
+    border-bottom: 1px solid #3b3b61;
 }
 
 th {
@@ -128,7 +128,7 @@ th {
 }
 
 tbody tr:hover {
-    background: #1e1e3a;
+    background: #1f1f3c;
 }
 
 .token-name {
@@ -136,12 +136,12 @@ tbody tr:hover {
 }
 
 .token-symbol {
-    color: #888;
+    color: #8a8787;
     font-size: 12px;
 }
 
 .green {
-    color: #4c4;
+    color: rgb(73, 206, 73);
 }
 
 .red {
@@ -163,7 +163,7 @@ tbody tr:hover {
 }
 
 #page-info {
-    color: #888;
+    color: #8a8282;
 }
 
 /* flash effect for live updates */
@@ -176,12 +176,12 @@ tbody tr:hover {
 }
 
 @keyframes flashG {
-    from { background: rgba(68, 204, 68, 0.3); }
+    from { background: rgba(67, 194, 67, 0.3); }
     to { background: transparent; }
 }
 
 @keyframes flashR {
-    from { background: rgba(238, 85, 85, 0.3); }
+    from { background: rgba(227, 84, 84, 0.3); }
     to { background: transparent; }
 }
 
