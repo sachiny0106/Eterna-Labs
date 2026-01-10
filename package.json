@@ -23,6 +23,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.16",
+    "@types/node-cron": "^3.0.11",
+    "@types/uuid": "^9.0.8",
     "axios": "^1.6.7",
     "axios-retry": "^4.0.0",
     "cors": "^2.8.5",
@@ -32,18 +37,14 @@
     "ioredis": "^5.3.2",
     "node-cron": "^3.0.3",
     "socket.io": "^4.7.4",
+    "typescript": "^5.3.3",
     "uuid": "^9.0.1",
     "winston": "^3.11.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.11.16",
-    "@types/node-cron": "^3.0.11",
     "@types/supertest": "^6.0.2",
-    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
     "eslint": "^8.56.0",
@@ -51,8 +52,7 @@
     "socket.io-client": "^4.7.4",
     "supertest": "^6.3.4",
     "ts-jest": "^29.1.2",
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "tsx": "^4.7.0"
   },
   "engines": {
     "node": ">=18.0.0"
