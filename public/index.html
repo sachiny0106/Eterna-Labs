@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meme Coin Aggregator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Meme Coin Aggregator</h1>
+
+    <div class="toolbar">
+      <div class="filters">
+        <button class="time-btn active" data-period="1h">1H</button>
+        <button class="time-btn" data-period="24h">24H</button>
+        <button class="time-btn" data-period="7d">7D</button>
+      </div>
+
+      <input type="text" id="searchInput" placeholder="Search tokens..." />
+
+      <select id="sortSelect" title="Sort tokens by">
+        <option value="volume">Sort by Volume</option>
+        <option value="price_change">Sort by Change</option>
+        <option value="market_cap">Sort by MCap</option>
+        <option value="liquidity">Sort by Liquidity</option>
+      </select>
+
+      <button id="refreshBtn">Refresh</button>
+    </div>
+
+    <div class="stats">
+      <span>Tokens: <strong id="totalTokens">-</strong></span>
+      <span>SOL: <strong id="solPrice">-</strong></span>
+      <span>Updated: <strong id="lastUpdate">-</strong></span>
+      <span id="connectionStatus" class="status disconnected">Connecting...</span>
+    </div>
+
+    <table id="tokenTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Token</th>
+          <th>Price</th>
+          <th>Change</th>
+          <th>Volume</th>
+          <th>Market Cap</th>
+          <th>Liquidity</th>
+        </tr>
+      </thead>
+      <tbody id="tokenTableBody">
+        <tr>
+          <td colspan="7" class="loading">Loading...</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button id="prevBtn" disabled>Previous</button>
+      <span id="pageInfo">-</span>
+      <button id="nextBtn">Next</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
