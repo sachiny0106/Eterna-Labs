@@ -1,0 +1,259 @@
+{
+  "info": {
+    "name": "Meme Coin Aggregator API",
+    "description": "API collection for Meme Coin Aggregator service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/health",
+            "description": "Get overall health status"
+          }
+        },
+        {
+          "name": "Liveness Probe",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/health/live",
+            "description": "Kubernetes liveness check"
+          }
+        },
+        {
+          "name": "Readiness Probe",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/health/ready",
+            "description": "Kubernetes readiness check"
+          }
+        },
+        {
+          "name": "Detailed Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/health/stats",
+            "description": "Get detailed stats including token count and cache stats"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tokens",
+      "item": [
+        {
+          "name": "List Tokens (default)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/tokens",
+            "description": "Get list of tokens with default settings"
+          }
+        },
+        {
+          "name": "List Tokens - 1H Period",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tokens?time_period=1h&sort_by=volume&sort_dir=desc&limit=20",
+              "query": [
+                {
+                  "key": "time_period",
+                  "value": "1h"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "volume"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "desc"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get tokens with 1h metrics"
+          }
+        },
+        {
+          "name": "List Tokens - 24H Period",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tokens?time_period=24h&sort_by=price_change&sort_dir=desc&limit=30",
+              "query": [
+                {
+                  "key": "time_period",
+                  "value": "24h"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "price_change"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "desc"
+                },
+                {
+                  "key": "limit",
+                  "value": "30"
+                }
+              ]
+            },
+            "description": "Get tokens sorted by 24h price change"
+          }
+        },
+        {
+          "name": "List Tokens - 7D Period",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tokens?time_period=7d&sort_by=market_cap&sort_dir=desc",
+              "query": [
+                {
+                  "key": "time_period",
+                  "value": "7d"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "market_cap"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "desc"
+                }
+              ]
+            },
+            "description": "Get tokens with 7d metrics sorted by market cap"
+          }
+        },
+        {
+          "name": "List Tokens - With Pagination",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tokens?limit=10&cursor=MTA=",
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "cursor",
+                  "value": "MTA="
+                }
+              ]
+            },
+            "description": "Get tokens with cursor-based pagination"
+          }
+        },
+        {
+          "name": "Search Tokens",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tokens/search?q=pepe&limit=10",
+              "query": [
+                {
+                  "key": "q",
+                  "value": "pepe"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Search tokens by name or ticker"
+          }
+        },
+        {
+          "name": "Get Token by Address",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/tokens/So11111111111111111111111111111111111111112",
+            "description": "Get specific token by address"
+          }
+        },
+        {
+          "name": "Batch Get Tokens",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/tokens/batch",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"addresses\": [\n    \"So11111111111111111111111111111111111111112\",\n    \"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v\"\n  ]\n}"
+            },
+            "description": "Get multiple tokens by addresses"
+          }
+        },
+        {
+          "name": "Get Trending Tokens",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tokens/trending/list?limit=10",
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get trending tokens by volume"
+          }
+        },
+        {
+          "name": "Get Top Gainers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tokens/gainers/list?limit=10",
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get tokens with highest price increase"
+          }
+        },
+        {
+          "name": "Get Top Losers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tokens/losers/list?limit=10",
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get tokens with highest price decrease"
+          }
+        }
+      ]
+    }
+  ]
+}
