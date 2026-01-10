@@ -468,10 +468,13 @@ export class TokenAggregator {
       // search filter
       if (filter.search) {
         const searchLower = filter.search.toLowerCase();
+        const name = (token.token_name || '').toLowerCase();
+        const ticker = (token.token_ticker || '').toLowerCase();
+        const address = (token.token_address || '').toLowerCase();
         if (
-          !token.token_name.toLowerCase().includes(searchLower) &&
-          !token.token_ticker.toLowerCase().includes(searchLower) &&
-          !token.token_address.toLowerCase().includes(searchLower)
+          !name.includes(searchLower) &&
+          !ticker.includes(searchLower) &&
+          !address.includes(searchLower)
         ) {
           return false;
         }
