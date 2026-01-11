@@ -4,6 +4,8 @@ Backend service that pulls meme coin data from multiple DEX APIs and serves it v
 
 **Live:** https://meme-coin-aggregator-ru0a.onrender.com
 
+**Demo Video:** https://youtu.be/5TErqLI6fFY
+
 ## Quick Start
 
 ```bash
